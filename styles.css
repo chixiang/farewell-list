@@ -1,0 +1,914 @@
+/* ============================================================
+   告别清单 / Farewell List - 静态官网
+   设计语言：东方水墨 · 极简留白 · 仪式感
+   ============================================================ */
+
+/* ---------- 主题色（CSS Variables） ---------- */
+:root,
+[data-theme="light"] {
+  --bg: #FAF8F5;
+  --bg-alt: #F2EFE9;
+  --primary-text: #3C3C3C;
+  --secondary-text: #8A847B;
+  --tertiary-text: #B5B0A8;
+  --accent: #C9A57B;
+  --accent-strong: #B23A48;
+  --divider: #E5E1DC;
+  --card-bg: #FFFFFF;
+  --shadow: 0 1px 3px rgba(60, 60, 60, 0.04);
+  --hero-quote-color: #3C3C3C;
+}
+
+[data-theme="dark"] {
+  --bg: #1A1A1A;
+  --bg-alt: #222222;
+  --primary-text: #F5F0E8;
+  --secondary-text: #A8A39C;
+  --tertiary-text: #6E6964;
+  --accent: #7BA8A0;
+  --accent-strong: #B23A48;
+  --divider: #2A2A2A;
+  --card-bg: #1F1F1F;
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  --hero-quote-color: #F5F0E8;
+}
+
+[data-theme="ink"] {
+  --bg: #000000;
+  --bg-alt: #0A0A0A;
+  --primary-text: #F5F0E8;
+  --secondary-text: #8A847B;
+  --tertiary-text: #4A4642;
+  --accent: #B23A48;
+  --accent-strong: #B23A48;
+  --divider: #1A1A1A;
+  --card-bg: #0A0A0A;
+  --shadow: none;
+  --hero-quote-color: #F5F0E8;
+}
+
+/* ---------- 基础重置 ---------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  background: var(--bg);
+  color: var(--primary-text);
+  line-height: 1.7;
+  font-weight: 300;
+  transition: background 0.4s ease-in-out, color 0.4s ease-in-out;
+}
+
+h1, h2, h3, h4 {
+  font-family: 'Noto Serif SC', 'Songti SC', 'STSong', serif;
+  font-weight: 500;
+  line-height: 1.3;
+  color: var(--primary-text);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+
+a:hover {
+  opacity: 0.6;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+  color: inherit;
+}
+
+img, svg {
+  display: block;
+  max-width: 100%;
+}
+
+/* ---------- 导航 ---------- */
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  padding: 20px 0;
+  background: rgba(250, 248, 245, 0.85);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  border-bottom: 1px solid var(--divider);
+  transition: background 0.4s ease-in-out;
+}
+
+[data-theme="dark"] .nav {
+  background: rgba(26, 26, 26, 0.85);
+}
+
+[data-theme="ink"] .nav {
+  background: rgba(0, 0, 0, 0.85);
+}
+
+.nav-inner {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+}
+
+.nav-logo {
+  font-family: 'Noto Serif SC', serif;
+  font-size: 18px;
+  font-weight: 500;
+  letter-spacing: 4px;
+}
+
+.nav-links {
+  display: flex;
+  gap: 32px;
+  font-size: 14px;
+  color: var(--secondary-text);
+}
+
+.nav-theme {
+  display: flex;
+  gap: 8px;
+}
+
+.theme-btn {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 1px solid var(--divider);
+  transition: transform 0.2s, border-color 0.2s;
+}
+
+.theme-btn:hover {
+  transform: scale(1.15);
+}
+
+.theme-btn-light {
+  background: #FAF8F5;
+}
+
+.theme-btn-dark {
+  background: #1A1A1A;
+}
+
+.theme-btn-ink {
+  background: #000000;
+  position: relative;
+}
+
+.theme-btn-ink::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #B23A48;
+  transform: translate(-50%, -50%);
+}
+
+[data-theme="light"] .theme-btn-light { border-color: var(--accent); }
+[data-theme="dark"] .theme-btn-dark { border-color: var(--accent); }
+[data-theme="ink"] .theme-btn-ink { border-color: var(--accent); }
+
+/* ---------- Hero ---------- */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 100px 40px 80px;
+  text-align: center;
+  position: relative;
+  background: var(--bg);
+}
+
+.hero-quote {
+  margin-bottom: 80px;
+  max-width: 720px;
+  opacity: 0;
+  animation: fadeIn 1.2s ease-out 0.3s forwards;
+}
+
+.quote-text {
+  font-family: 'Noto Serif SC', serif;
+  font-size: clamp(24px, 4vw, 36px);
+  font-weight: 300;
+  line-height: 1.6;
+  letter-spacing: 4px;
+  color: var(--hero-quote-color);
+  margin-bottom: 20px;
+}
+
+.quote-attr {
+  font-size: 14px;
+  color: var(--tertiary-text);
+  letter-spacing: 1px;
+}
+
+.hero-mark {
+  opacity: 0;
+  animation: fadeIn 1.2s ease-out 0.8s forwards;
+}
+
+.hero-title {
+  font-size: clamp(40px, 7vw, 64px);
+  font-weight: 500;
+  letter-spacing: 16px;
+  margin-bottom: 16px;
+  text-indent: 16px; /* 抵消 letter-spacing 末尾空白 */
+}
+
+.hero-subtitle {
+  font-size: 16px;
+  color: var(--secondary-text);
+  letter-spacing: 2px;
+  margin-bottom: 8px;
+}
+
+.hero-tagline {
+  font-size: 14px;
+  color: var(--tertiary-text);
+  letter-spacing: 1px;
+  margin-bottom: 40px;
+  font-style: italic;
+}
+
+.hero-cta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.btn {
+  display: inline-block;
+  padding: 14px 36px;
+  font-size: 15px;
+  letter-spacing: 2px;
+  border-radius: 2px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  text-align: center;
+}
+
+.btn-primary {
+  background: var(--primary-text);
+  color: var(--bg);
+}
+
+.btn-primary:hover {
+  background: var(--accent-strong);
+  color: #FFFFFF;
+  opacity: 1;
+}
+
+.btn-large {
+  padding: 18px 48px;
+  font-size: 16px;
+}
+
+.hero-meta,
+.download-meta {
+  font-size: 12px;
+  color: var(--tertiary-text);
+  letter-spacing: 2px;
+}
+
+.hero-progress {
+  position: absolute;
+  bottom: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.hero-progress-ring {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 1px solid var(--tertiary-text);
+  opacity: 0.4;
+  position: relative;
+}
+
+.hero-progress-ring::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: 50%;
+  width: 50%;
+  height: 2px;
+  background: var(--tertiary-text);
+  animation: ringProgress 5s linear infinite;
+  transform-origin: 0 11px;
+}
+
+@keyframes ringProgress {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ---------- Sections ---------- */
+.section {
+  padding: 120px 40px;
+}
+
+.section-alt {
+  background: var(--bg-alt);
+}
+
+.section-inner {
+  max-width: 1080px;
+  margin: 0 auto;
+}
+
+.section-inner-narrow {
+  max-width: 720px;
+}
+
+.section-eyebrow {
+  font-size: 12px;
+  color: var(--tertiary-text);
+  letter-spacing: 8px;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.section-title {
+  font-size: clamp(28px, 4vw, 40px);
+  font-weight: 400;
+  letter-spacing: 4px;
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.section-lead {
+  font-size: 16px;
+  color: var(--secondary-text);
+  text-align: center;
+  max-width: 640px;
+  margin: 0 auto 60px;
+  line-height: 1.8;
+}
+
+.section-foot {
+  text-align: center;
+  font-size: 14px;
+  color: var(--tertiary-text);
+  margin-top: 60px;
+  letter-spacing: 1px;
+}
+
+/* ---------- Prose ---------- */
+.prose {
+  max-width: 720px;
+  margin: 0 auto;
+  font-size: 16px;
+  line-height: 2;
+  color: var(--primary-text);
+}
+
+.prose p {
+  margin-bottom: 20px;
+}
+
+.prose p strong {
+  font-weight: 500;
+  color: var(--accent-strong);
+}
+
+.prose-center {
+  text-align: center;
+}
+
+.pull-quote {
+  font-family: 'Noto Serif SC', serif;
+  font-size: 24px;
+  font-weight: 300;
+  text-align: center;
+  padding: 32px 0;
+  margin: 32px 0;
+  color: var(--primary-text);
+  letter-spacing: 4px;
+  line-height: 1.6;
+  border-top: 1px solid var(--divider);
+  border-bottom: 1px solid var(--divider);
+}
+
+.pull-quote-small {
+  font-size: 18px;
+  letter-spacing: 2px;
+  padding: 24px 0;
+  margin: 24px 0;
+  color: var(--secondary-text);
+}
+
+/* ---------- 6 种告别方式 ---------- */
+.method-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 24px;
+  margin-top: 60px;
+}
+
+.method-card {
+  background: var(--card-bg);
+  padding: 40px 24px;
+  text-align: center;
+  border: 1px solid var(--divider);
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
+
+.method-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(60, 60, 60, 0.06);
+  border-color: var(--accent);
+}
+
+.method-icon {
+  width: 48px;
+  height: 48px;
+  margin: 0 auto 20px;
+  color: var(--accent);
+}
+
+.method-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.method-title {
+  font-size: 20px;
+  font-weight: 400;
+  letter-spacing: 4px;
+  margin-bottom: 8px;
+}
+
+.method-desc {
+  font-size: 13px;
+  color: var(--tertiary-text);
+  letter-spacing: 1px;
+}
+
+/* ---------- Ceremony ---------- */
+.ceremony {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: center;
+  margin-top: 40px;
+}
+
+.ceremony-illustration {
+  text-align: center;
+}
+
+.ceremony-circle {
+  width: 240px;
+  height: 240px;
+  margin: 0 auto;
+  color: var(--accent-strong);
+  cursor: pointer;
+  position: relative;
+}
+
+.ceremony-svg {
+  width: 100%;
+  height: 100%;
+}
+
+.ceremony-ink {
+  animation: inkPulse 1.5s ease-out infinite;
+}
+
+.ceremony-circle:hover .ceremony-ink {
+  animation: inkExpand 1.5s ease-out forwards;
+}
+
+@keyframes inkPulse {
+  0% { r: 0; opacity: 0.8; }
+  50% { r: 50; opacity: 0.5; }
+  100% { r: 80; opacity: 0; }
+}
+
+@keyframes inkExpand {
+  0% { r: 0; opacity: 0.9; }
+  100% { r: 80; opacity: 0; }
+}
+
+.ceremony-caption {
+  font-size: 12px;
+  color: var(--tertiary-text);
+  letter-spacing: 4px;
+  margin-top: 16px;
+}
+
+.ceremony-text {
+  font-size: 15px;
+  line-height: 2;
+}
+
+.ceremony-text p {
+  margin-bottom: 16px;
+}
+
+/* ---------- 主题展示 ---------- */
+.theme-showcase {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 32px;
+  margin-top: 60px;
+}
+
+.theme-card {
+  padding: 48px 32px;
+  border-radius: 4px;
+  text-align: center;
+  border: 1px solid var(--divider);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.theme-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(60, 60, 60, 0.08);
+}
+
+.theme-card-light {
+  background: #FAF8F5;
+  color: #3C3C3C;
+}
+
+.theme-card-dark {
+  background: #1A1A1A;
+  color: #F5F0E8;
+  border-color: #2A2A2A;
+}
+
+.theme-card-ink {
+  background: #000000;
+  color: #F5F0E8;
+  border-color: #1A1A1A;
+}
+
+.theme-preview {
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.theme-text {
+  font-family: 'Noto Serif SC', serif;
+  font-size: 24px;
+  letter-spacing: 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.theme-text-accent {
+  font-size: 14px;
+  letter-spacing: 6px;
+  opacity: 0.8;
+}
+
+.theme-card-light .theme-text-accent { color: #C9A57B; }
+.theme-card-dark .theme-text-accent { color: #7BA8A0; }
+.theme-card-ink .theme-text-accent { color: #B23A48; }
+
+.theme-text-secondary {
+  font-size: 11px;
+  letter-spacing: 2px;
+  opacity: 0.5;
+}
+
+.theme-name {
+  font-size: 20px;
+  font-weight: 400;
+  letter-spacing: 6px;
+  margin-bottom: 8px;
+}
+
+.theme-card-light .theme-name { color: #3C3C3C; }
+.theme-card-dark .theme-name { color: #F5F0E8; }
+.theme-card-ink .theme-name { color: #F5F0E8; }
+
+.theme-desc {
+  font-size: 13px;
+  letter-spacing: 2px;
+  margin-bottom: 12px;
+  opacity: 0.7;
+}
+
+.theme-card-light .theme-desc { color: #8A847B; }
+.theme-card-dark .theme-desc { color: #A8A39C; }
+.theme-card-ink .theme-desc { color: #8A847B; }
+
+.theme-color {
+  font-family: 'SF Mono', 'Menlo', monospace;
+  font-size: 11px;
+  letter-spacing: 1px;
+  opacity: 0.5;
+}
+
+.theme-card-light .theme-color { color: #8A847B; }
+.theme-card-dark .theme-color { color: #8A847B; }
+.theme-card-ink .theme-color { color: #8A847B; }
+
+/* ---------- 隐私 ---------- */
+.privacy-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 32px;
+  margin: 60px 0;
+  text-align: center;
+}
+
+.privacy-item {
+  padding: 32px 16px;
+}
+
+.privacy-num {
+  font-family: 'Noto Serif SC', serif;
+  font-size: 64px;
+  font-weight: 300;
+  color: var(--accent-strong);
+  line-height: 1;
+  margin-bottom: 12px;
+}
+
+.privacy-label {
+  font-size: 14px;
+  color: var(--secondary-text);
+  letter-spacing: 2px;
+}
+
+/* ---------- Splash 展示 ---------- */
+.splash-showcase {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: center;
+  margin-top: 40px;
+}
+
+.splash-mock {
+  aspect-ratio: 9 / 16;
+  max-width: 360px;
+  margin: 0 auto;
+  background: var(--bg);
+  border: 1px solid var(--divider);
+  border-radius: 24px;
+  padding: 22% 32px 14%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: var(--shadow);
+  position: relative;
+  max-height: 540px;
+}
+
+.splash-quote-block {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+}
+
+.splash-quote-text {
+  font-family: 'Noto Serif SC', serif;
+  font-size: 20px;
+  font-weight: 300;
+  line-height: 1.7;
+  letter-spacing: 2px;
+  color: var(--primary-text);
+  margin-bottom: 16px;
+}
+
+.splash-quote-attr {
+  font-size: 12px;
+  color: var(--tertiary-text);
+  letter-spacing: 1px;
+}
+
+.splash-watermark {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.splash-ring {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 1px solid var(--tertiary-text);
+  opacity: 0.3;
+}
+
+.splash-watermark span {
+  font-size: 11px;
+  color: var(--tertiary-text);
+  letter-spacing: 8px;
+  opacity: 0.55;
+}
+
+.splash-explainer {
+  font-size: 15px;
+  line-height: 2;
+}
+
+.splash-explainer p {
+  margin-bottom: 16px;
+}
+
+/* ---------- FAQ ---------- */
+.faq-list {
+  max-width: 720px;
+  margin: 60px auto 0;
+}
+
+.faq-item {
+  border-bottom: 1px solid var(--divider);
+  padding: 24px 0;
+}
+
+.faq-item summary {
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 400;
+  letter-spacing: 1px;
+  list-style: none;
+  position: relative;
+  padding-right: 40px;
+  transition: color 0.2s;
+}
+
+.faq-item summary::-webkit-details-marker {
+  display: none;
+}
+
+.faq-item summary::after {
+  content: '+';
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 20px;
+  color: var(--tertiary-text);
+  font-weight: 300;
+  transition: transform 0.3s;
+}
+
+.faq-item[open] summary::after {
+  transform: translateY(-50%) rotate(45deg);
+}
+
+.faq-item summary:hover {
+  color: var(--accent);
+}
+
+.faq-item p {
+  margin-top: 16px;
+  font-size: 15px;
+  line-height: 1.9;
+  color: var(--secondary-text);
+}
+
+/* ---------- CTA ---------- */
+.section-cta {
+  background: var(--bg-alt);
+  text-align: center;
+}
+
+.section-cta .section-title {
+  margin-bottom: 40px;
+}
+
+.section-cta .pull-quote {
+  margin: 40px auto;
+  max-width: 640px;
+}
+
+.section-cta .hero-cta {
+  margin-top: 40px;
+}
+
+/* ---------- Footer ---------- */
+.footer {
+  padding: 80px 40px;
+  text-align: center;
+  background: var(--bg);
+  border-top: 1px solid var(--divider);
+}
+
+.footer-mark {
+  font-family: 'Noto Serif SC', serif;
+  font-size: 24px;
+  font-weight: 400;
+  letter-spacing: 8px;
+  margin-bottom: 8px;
+}
+
+.footer-tag {
+  font-size: 14px;
+  color: var(--secondary-text);
+  letter-spacing: 2px;
+  margin-bottom: 16px;
+  font-style: italic;
+}
+
+.footer-meta {
+  font-size: 12px;
+  color: var(--tertiary-text);
+  letter-spacing: 2px;
+}
+
+/* ---------- 响应式 ---------- */
+@media (max-width: 768px) {
+  .nav {
+    padding: 16px 0;
+  }
+
+  .nav-inner {
+    padding: 0 24px;
+    gap: 16px;
+  }
+
+  .nav-links {
+    display: none;
+  }
+
+  .section {
+    padding: 80px 24px;
+  }
+
+  .hero {
+    padding: 80px 24px 60px;
+  }
+
+  .ceremony,
+  .splash-showcase {
+    grid-template-columns: 1fr;
+    gap: 48px;
+  }
+
+  .method-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .pull-quote {
+    font-size: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .method-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .nav-theme {
+    gap: 6px;
+  }
+
+  .theme-btn {
+    width: 16px;
+    height: 16px;
+  }
+}

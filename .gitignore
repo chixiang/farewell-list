@@ -1,0 +1,8 @@
+# 编辑器
+.DS_Store
+.vscode/
+.idea/
+
+# 临时文件
+*.log
+*.tmp
