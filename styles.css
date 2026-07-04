@@ -1,6 +1,6 @@
 /* ============================================================
    告别清单 / Farewell List - 静态官网
-   设计语言：东方水墨 · 极简留白 · 仪式感
+   设计语言：东方水墨 · 极简留白 · 呼吸感 · 仪式感
    ============================================================ */
 
 /* ---------- 主题色（CSS Variables） ---------- */
@@ -17,6 +17,8 @@
   --card-bg: #FFFFFF;
   --shadow: 0 1px 3px rgba(60, 60, 60, 0.04);
   --hero-quote-color: #3C3C3C;
+  --press-scale: 0.97;
+  --spring-multiplier: 1;
 }
 
 [data-theme="dark"] {
@@ -31,6 +33,8 @@
   --card-bg: #1F1F1F;
   --shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
   --hero-quote-color: #F5F0E8;
+  --press-scale: 0.97;
+  --spring-multiplier: 1;
 }
 
 [data-theme="ink"] {
@@ -45,6 +49,8 @@
   --card-bg: #0A0A0A;
   --shadow: none;
   --hero-quote-color: #F5F0E8;
+  --press-scale: 0.97;
+  --spring-multiplier: 1;
 }
 
 /* ---------- 基础重置 ---------- */
@@ -69,7 +75,7 @@ body {
   color: var(--primary-text);
   line-height: 1.7;
   font-weight: 300;
-  transition: background 0.4s ease-in-out, color 0.4s ease-in-out;
+  transition: background 0.6s ease-in-out, color 0.6s ease-in-out;
 }
 
 h1, h2, h3, h4 {
@@ -95,11 +101,85 @@ button {
   border: none;
   background: none;
   color: inherit;
+  -webkit-tap-highlight-color: transparent;
 }
 
 img, svg {
   display: block;
   max-width: 100%;
+}
+
+/* ============================================================
+   呼吸感 · 全局微动画
+   ============================================================ */
+
+/* 呼吸：持续缓浮动（对应 app DiaryEmptyView 树叶 2.5s 浮动） */
+@keyframes breatheFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+/* 呼吸：持续缓缩放（对应 app DiaryEmptyView 按钮 1.8s 脉动） */
+@keyframes breatheScale {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.04); }
+}
+
+/* 仪式感：朱砂圆圈脉冲（对应 app ceremony 动画） */
+  0% { r: 0; opacity: 0.8; }
+  50% { r: 50; opacity: 0.5; }
+  100% { r: 80; opacity: 0; }
+}
+
+/* 仪式感：朱砂圆圈展开（对应 app ceremony 弹簧动画 0.5s response） */
+  0% { r: 0; opacity: 0.9; }
+  100% { r: 80; opacity: 0; }
+}
+
+/* 仪式感：打字机逐字出现（对应 app splash 0.15s/字逐字揭示） */
+.char-reveal {
+  display: inline;
+  animation: charIn 0.15s ease-out forwards;
+  opacity: 0;
+}
+
+@keyframes charIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* 圆环进度（对应 app 5s auto-dismiss） */
+@keyframes ringProgress {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* 弹性入场（对应 app scrollTransition 0.06 * index 错峰） */
+@keyframes springIn {
+  0% { opacity: 0; transform: translateY(16px) scale(0.96); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* 渐入 */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================================================
+   按压反馈（对应 app PressScaleButtonStyle：0.97x + 0.9 透明度）
+   ============================================================ */
+.pressable {
+  transition: transform 0.25s cubic-bezier(0.28, 0.6, 0.32, 1),
+              opacity 0.2s ease;
+  cursor: pointer;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.pressable:active {
+  transform: scale(var(--press-scale));
+  opacity: 0.9;
 }
 
 /* ---------- 导航 ---------- */
@@ -114,7 +194,7 @@ img, svg {
   backdrop-filter: saturate(180%) blur(20px);
   -webkit-backdrop-filter: saturate(180%) blur(20px);
   border-bottom: 1px solid var(--divider);
-  transition: background 0.4s ease-in-out;
+  transition: background 0.6s ease-in-out;
 }
 
 [data-theme="dark"] .nav {
@@ -140,6 +220,12 @@ img, svg {
   font-size: 18px;
   font-weight: 500;
   letter-spacing: 4px;
+  transition: opacity 0.2s;
+}
+
+.nav-logo:active {
+  transform: scale(0.97);
+  opacity: 0.9;
 }
 
 .nav-links {
@@ -147,6 +233,15 @@ img, svg {
   gap: 32px;
   font-size: 14px;
   color: var(--secondary-text);
+}
+
+.nav-links a {
+  transition: color 0.2s;
+}
+
+.nav-links a:hover {
+  color: var(--primary-text);
+  opacity: 1;
 }
 
 .nav-theme {
@@ -159,11 +254,14 @@ img, svg {
   height: 18px;
   border-radius: 50%;
   border: 1px solid var(--divider);
-  transition: transform 0.2s, border-color 0.2s;
+  transition: transform 0.25s cubic-bezier(0.28, 0.6, 0.32, 1),
+              border-color 0.2s;
+  cursor: pointer;
 }
 
-.theme-btn:hover {
-  transform: scale(1.15);
+.theme-btn:active {
+  transform: scale(0.97);
+  opacity: 0.9;
 }
 
 .theme-btn-light {
@@ -211,8 +309,7 @@ img, svg {
 .hero-quote {
   margin-bottom: 80px;
   max-width: 720px;
-  opacity: 0;
-  animation: fadeIn 1.2s ease-out 0.3s forwards;
+  animation: fadeIn 1.2s ease-out 0.3s both;
 }
 
 .quote-text {
@@ -223,17 +320,36 @@ img, svg {
   letter-spacing: 4px;
   color: var(--hero-quote-color);
   margin-bottom: 20px;
+  min-height: 1.6em;
+}
+
+.quote-text .type-cursor {
+  display: inline-block;
+  width: 1px;
+  height: 1em;
+  background: var(--accent);
+  margin-left: 2px;
+  animation: cursorBlink 0.8s steps(2) infinite;
+  vertical-align: text-bottom;
+}
+
+@keyframes cursorBlink {
+  0% { opacity: 1; }
+  100% { opacity: 0; }
 }
 
 .quote-attr {
   font-size: 14px;
   color: var(--tertiary-text);
   letter-spacing: 1px;
+  transition: opacity 0.4s ease-out;
 }
 
 .hero-mark {
-  opacity: 0;
-  animation: fadeIn 1.2s ease-out 0.8s forwards;
+  animation: fadeIn 1.2s ease-out 1.2s both;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .hero-title {
@@ -241,7 +357,9 @@ img, svg {
   font-weight: 500;
   letter-spacing: 16px;
   margin-bottom: 16px;
-  text-indent: 16px; /* 抵消 letter-spacing 末尾空白 */
+  text-indent: 16px;
+  /* 呼吸感：持续浮动 2.5s ease-in-out */
+  animation: breatheFloat 2.5s ease-in-out infinite;
 }
 
 .hero-subtitle {
@@ -272,9 +390,18 @@ img, svg {
   font-size: 15px;
   letter-spacing: 2px;
   border-radius: 2px;
-  transition: all 0.3s ease;
   cursor: pointer;
   text-align: center;
+  transition: transform 0.25s cubic-bezier(0.28, 0.6, 0.32, 1),
+              background 0.3s,
+              color 0.3s;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.btn:active {
+  transform: scale(var(--press-scale));
+  opacity: 0.9;
 }
 
 .btn-primary {
@@ -291,6 +418,11 @@ img, svg {
 .btn-large {
   padding: 18px 48px;
   font-size: 16px;
+}
+
+/* 下载版按钮的呼吸脉动 */
+.btn-breathing {
+  animation: breatheScale 1.8s ease-in-out infinite;
 }
 
 .hero-meta,
@@ -326,16 +458,6 @@ img, svg {
   background: var(--tertiary-text);
   animation: ringProgress 5s linear infinite;
   transform-origin: 0 11px;
-}
-
-@keyframes ringProgress {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
 }
 
 /* ---------- Sections ---------- */
@@ -427,11 +549,15 @@ img, svg {
 }
 
 .pull-quote-small {
-  font-size: 18px;
-  letter-spacing: 2px;
-  padding: 24px 0;
+  font-size: 16px;
+  letter-spacing: 1px;
+  padding: 20px 0;
   margin: 24px 0;
   color: var(--secondary-text);
+  font-style: normal;
+  border-top: none;
+  border-bottom: none;
+  text-align: left;
 }
 
 /* ---------- 6 种告别方式 ---------- */
@@ -448,7 +574,16 @@ img, svg {
   text-align: center;
   border: 1px solid var(--divider);
   border-radius: 2px;
-  transition: all 0.3s ease;
+  transition: transform 0.3s cubic-bezier(0.28, 0.6, 0.32, 1),
+              box-shadow 0.3s,
+              border-color 0.3s;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.method-card:active {
+  transform: scale(var(--press-scale));
+  opacity: 0.9;
 }
 
 .method-card:hover {
@@ -482,7 +617,9 @@ img, svg {
   letter-spacing: 1px;
 }
 
-/* ---------- Ceremony ---------- */
+
+
+/* ---------- 仪式感 · 拍立得显影 ---------- */
 .ceremony {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -493,55 +630,140 @@ img, svg {
 
 .ceremony-illustration {
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
 }
 
-.ceremony-circle {
-  width: 240px;
-  height: 240px;
-  margin: 0 auto;
-  color: var(--accent-strong);
-  cursor: pointer;
+.polaroid-frame {
+  width: 220px;
+  height: 280px;
+  margin: 0;
+  background: var(--card-bg);
+  border: 1px solid var(--divider);
+  box-shadow: var(--shadow);
   position: relative;
+  cursor: pointer;
+  overflow: hidden;
+  transition: transform 0.25s cubic-bezier(0.28, 0.6, 0.32, 1),
+              box-shadow 0.3s;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
-.ceremony-svg {
-  width: 100%;
-  height: 100%;
+.polaroid-frame:active {
+  transform: scale(0.97);
 }
 
-.ceremony-ink {
-  animation: inkPulse 1.5s ease-out infinite;
+/* 拍立得的白边：用 padding 模拟底部空白 */
+.polaroid-frame::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 44px;
+  background: var(--card-bg);
+  z-index: 2;
+  pointer-events: none;
 }
 
-.ceremony-circle:hover .ceremony-ink {
-  animation: inkExpand 1.5s ease-out forwards;
+/* 显影前：空白画纸 + 占位符 */
+.polaroid-image-area {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+  transition: opacity 0.5s ease-out;
+  z-index: 1;
 }
 
-@keyframes inkPulse {
-  0% { r: 0; opacity: 0.8; }
-  50% { r: 50; opacity: 0.5; }
-  100% { r: 80; opacity: 0; }
+.polaroid-grain {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
 }
 
-@keyframes inkExpand {
-  0% { r: 0; opacity: 0.9; }
-  100% { r: 80; opacity: 0; }
+.polaroid-thumb {
+  font-size: 28px;
+  color: var(--tertiary-text);
+  opacity: 0.3;
+  line-height: 1;
 }
 
-.ceremony-caption {
+.polaroid-label {
+  font-size: 10px;
+  color: var(--tertiary-text);
+  letter-spacing: 3px;
+  opacity: 0.6;
+}
+
+/* 显影后结果：同样绝对定位覆盖 */
+.polaroid-result {
+  position: absolute;
+  inset: 0;
+  padding: 24px 20px 44px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 1.2s ease-out 0.15s;
+  z-index: 1;
+  background: var(--card-bg);
+}
+
+.polaroid-result.visible {
+  opacity: 1;
+}
+
+.polaroid-result-icon {
+  font-size: 24px;
+  color: var(--accent-strong);
+  margin-bottom: 12px;
+  line-height: 1;
+}
+
+.polaroid-result-name {
+  font-family: 'Noto Serif SC', serif;
+  font-size: 16px;
+  font-weight: 400;
+  letter-spacing: 2px;
+  color: var(--primary-text);
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+.polaroid-result-days {
   font-size: 12px;
   color: var(--tertiary-text);
-  letter-spacing: 4px;
-  margin-top: 16px;
+  letter-spacing: 1px;
 }
 
-.ceremony-text {
-  font-size: 15px;
-  line-height: 2;
+/* 再试一次按钮 */
+.polaroid-trigger {
+  padding: 8px 20px;
+  font-size: 12px;
+  letter-spacing: 3px;
+  color: var(--tertiary-text);
+  border: none;
+  cursor: pointer;
+  background: none;
+  transition: color 0.2s, transform 0.25s cubic-bezier(0.28, 0.6, 0.32, 1);
 }
 
-.ceremony-text p {
-  margin-bottom: 16px;
+.polaroid-trigger:active {
+  transform: scale(0.97);
+}
+
+.polaroid-trigger:hover {
+  color: var(--primary-text);
 }
 
 /* ---------- 主题展示 ---------- */
@@ -557,8 +779,17 @@ img, svg {
   border-radius: 4px;
   text-align: center;
   border: 1px solid var(--divider);
-  transition: all 0.3s ease;
+  transition: transform 0.3s cubic-bezier(0.28, 0.6, 0.32, 1),
+              box-shadow 0.3s,
+              border-color 0.3s;
   cursor: pointer;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.theme-card:active {
+  transform: scale(var(--press-scale));
+  opacity: 0.9;
 }
 
 .theme-card:hover {
@@ -778,6 +1009,8 @@ img, svg {
   position: relative;
   padding-right: 40px;
   transition: color 0.2s;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 .faq-item summary::-webkit-details-marker {
@@ -793,11 +1026,16 @@ img, svg {
   font-size: 20px;
   color: var(--tertiary-text);
   font-weight: 300;
-  transition: transform 0.3s;
+  transition: transform 0.3s cubic-bezier(0.28, 0.6, 0.32, 1);
 }
 
 .faq-item[open] summary::after {
   transform: translateY(-50%) rotate(45deg);
+}
+
+.faq-item summary:active {
+  transform: scale(var(--press-scale));
+  opacity: 0.9;
 }
 
 .faq-item summary:hover {
@@ -911,4 +1149,17 @@ img, svg {
     width: 16px;
     height: 16px;
   }
+}
+
+
+/* ---------- 仪式感 · 告别语 ---------- */
+.farewell-saying {
+  font-size: 15px;
+  line-height: 2;
+  color: var(--secondary-text);
+  padding: 16px 0;
+  margin: 12px 0;
+  text-align: left;
+  border: none;
+  letter-spacing: 0.5px;
 }

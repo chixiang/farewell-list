@@ -1,8 +1,12 @@
 /* ============================================================
    告别清单 / Farewell List - 主页交互
+   呼吸感 + 仪式感（与 App 微交互对齐）
    - 主题切换（localStorage 记忆）
-   - 今日金句（按一年中的第几天取模，跟 app 同步）
-   - 滚动 fade-in
+   - 今日金句（按 dayOfYear % 30 取模，与 app 同步）
+   - 逐字打字机揭示金句（SplashQuoteView 对齐）
+   - 错峰滚动入场（DiaryListView 0.06s * index 对齐）
+   - 朱砂圆圈双击反馈（Ceremony 对齐）
+   - Nav-scroll 透明过渡
    ============================================================ */
 
 // ---------- 30 句金句（来自 daily_quotes.json，跟 app 同步） ----------
@@ -48,12 +52,57 @@ function getTodayQuote() {
   return QUOTES[dayOfYear % QUOTES.length];
 }
 
-function renderTodayQuote() {
+// ---------- 仪式感 · 逐字打字机（对应 app SplashQuoteView 逐字揭示 0.15s/字） ----------
+function typeQuote(el, text, interval, callback) {
+  el.innerHTML = "";
+  el.style.visibility = "visible";
+  const chars = text.split("");
+  let i = 0;
+
+  function typeChar() {
+    if (i >= chars.length) {
+      if (callback) callback();
+      return;
+    }
+    const span = document.createElement("span");
+    span.textContent = chars[i];
+    span.className = "char-reveal";
+    span.style.setProperty("animation-delay", "0s");
+    el.appendChild(span);
+    i++;
+    setTimeout(typeChar, interval);
+  }
+
+  typeChar();
+}
+
+function renderQuoteWithTypewriter() {
   const q = getTodayQuote();
   const quoteEl = document.getElementById("today-quote");
   const attrEl = document.getElementById("today-attr");
-  if (quoteEl) quoteEl.textContent = q.text;
-  if (attrEl) attrEl.textContent = "— " + q.attr;
+
+  if (!quoteEl) return;
+
+  // 先设 text content 让 spacing 算对，同时保持 visibility hidden
+  quoteEl.textContent = q.text;
+  quoteEl.style.visibility = "hidden";
+
+  // 0.3s 后开始打字
+  setTimeout(() => {
+    typeQuote(quoteEl, q.text, 50, () => {
+      // 最后带一小延迟，然后出处淡入
+      setTimeout(() => {
+        if (attrEl) {
+          attrEl.textContent = "— " + q.attr;
+          attrEl.style.opacity = "0";
+          attrEl.style.transition = "opacity 0.4s ease-out";
+          // 触发 reflow
+          attrEl.getBoundingClientRect();
+          attrEl.style.opacity = "1";
+        }
+      }, 300);
+    });
+  }, 300);
 }
 
 // ---------- 主题切换 ----------
@@ -87,48 +136,140 @@ function bindThemeButtons() {
     card.addEventListener("click", () => {
       const theme = card.getAttribute("data-theme");
       setTheme(theme);
-      // 滚动到主题区块顶部
       document.getElementById("design").scrollIntoView({ behavior: "smooth", block: "start" });
     });
   });
 }
 
-// ---------- 滚动 fade-in ----------
-function bindScrollFadeIn() {
+// ---------- 呼吸感 · 错峰滚动入场（对应 app DiaryListView 0.06s * index） ----------
+function bindScrollSpringIn() {
   if (!("IntersectionObserver" in window)) return;
 
-  const targets = document.querySelectorAll(
-    ".section, .method-card, .theme-card, .ceremony, .splash-showcase, .privacy-item"
-  );
-  targets.forEach(t => {
-    t.style.opacity = "0";
-    t.style.transform = "translateY(20px)";
-    t.style.transition = "opacity 0.8s ease-out, transform 0.8s ease-out";
-  });
+  // 逐组优雅入场
+  const groups = [
+    { sel: ".method-card", delayBase: 0, delayStep: 0.06 },
+    { sel: ".theme-card", delayBase: 0, delayStep: 0.08 },
+    { sel: ".privacy-item", delayBase: 0, delayStep: 0.06 },
+    { sel: ".ceremony", delayBase: 0, delayStep: 0 },
+    { sel: ".splash-showcase", delayBase: 0, delayStep: 0 },
+    { sel: ".faq-item", delayBase: 0, delayStep: 0.04 },
+  ];
 
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.style.opacity = "1";
-        entry.target.style.transform = "translateY(0)";
-        observer.unobserve(entry.target);
-      }
+  groups.forEach(group => {
+    const targets = document.querySelectorAll(group.sel);
+    if (targets.length === 0) return;
+
+    targets.forEach(t => {
+      t.style.opacity = "0";
+      t.style.transform = "translateY(16px) scale(0.96)";
+      t.style.transition = "none";
     });
-  }, { threshold: 0.1, rootMargin: "0px 0px -50px 0px" });
 
-  targets.forEach(t => observer.observe(t));
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const index = Array.from(targets).indexOf(entry.target);
+          const delay = group.delayBase + index * group.delayStep;
+          const el = entry.target;
+          el.style.transition = `opacity 0.5s cubic-bezier(0.28, 0.6, 0.32, 1) ${delay}s, transform 0.5s cubic-bezier(0.28, 0.6, 0.32, 1) ${delay}s`;
+          el.style.opacity = "1";
+          el.style.transform = "translateY(0) scale(1)";
+          observer.unobserve(el);
+        }
+      });
+    }, { threshold: 0.12, rootMargin: "0px 0px -40px 0px" });
+
+    targets.forEach(t => observer.observe(t));
+  });
+}
+
+// ---------- 拍立得显影（对应 app FarewellCardView 拍立得白边卡片） ----------
+// 每次点击：升起空白卡 → 渐显影 → 最终定稿
+function bindPolaroidDevelop() {
+  const frame = document.getElementById("polaroid-demo");
+  const trigger = document.querySelector(".polaroid-trigger");
+  if (!frame) return;
+
+  function develop() {
+    const imgArea = frame.querySelector(".polaroid-image-area");
+    const result = frame.querySelector(".polaroid-result");
+    if (!imgArea || !result) return;
+
+    // 重置：移除 result 可见性，显示 image-area
+    result.classList.remove("visible");
+    imgArea.style.opacity = "1";
+    imgArea.style.display = "flex";
+    // 强制 reflow
+    void result.offsetWidth;
+
+    // 0.5s 后 image-area 渐隐
+    setTimeout(() => {
+      imgArea.style.opacity = "0";
+    }, 500);
+
+    // 0.5s + 0.6s 渐隐时间 = 1.1s 后 result 渐显
+    setTimeout(() => {
+      imgArea.style.display = "none";
+      result.classList.add("visible");
+    }, 1200);
+  }
+
+  // 点击拍立得帧触发
+  frame.addEventListener("click", develop);
+  // 点击"再试一次"按钮触发
+  if (trigger) {
+    trigger.addEventListener("click", (e) => {
+      e.stopPropagation();
+      develop();
+    });
+  }
+
+  // 页面加载后 2s 自动演示一次
+  setTimeout(develop, 2000);
+}
+
+// ---------- Nav 滚动透明过渡 ----------
+function bindNavScroll() {
+  const nav = document.querySelector(".nav");
+  if (!nav) return;
+  const observer = new IntersectionObserver(([entry]) => {
+    if (!entry.isIntersecting) {
+      nav.style.backdropFilter = "saturate(180%) blur(20px)";
+      nav.style.webkitBackdropFilter = "saturate(180%) blur(20px)";
+      nav.style.borderBottomColor = "var(--divider)";
+    } else {
+      nav.style.backdropFilter = "none";
+      nav.style.webkitBackdropFilter = "none";
+      nav.style.borderBottomColor = "transparent";
+    }
+  }, { rootMargin: "-80px 0px 0px 0px" });
+  observer.observe(document.querySelector(".hero"));
+}
+
+// ---------- CTA 按钮缓动呼吸 ----------
+function bindCTABreathing() {
+  const ctaBtn = document.querySelector(".section-cta .btn");
+  if (ctaBtn) {
+    ctaBtn.classList.add("btn-breathing");
+  }
 }
 
 // ---------- 启动 ----------
 document.addEventListener("DOMContentLoaded", () => {
-  // 1. 主题（不闪屏：先设置再渲染）
+  // 1. 主题（先设置再渲染，避免闪屏）
   const theme = getInitialTheme();
   document.documentElement.setAttribute("data-theme", theme);
 
-  // 2. 今日金句
-  renderTodayQuote();
+  // 2. 今日金句逐字打字
+  renderQuoteWithTypewriter();
 
-  // 3. 绑定事件
+  // 3. 绑定交互
   bindThemeButtons();
-  bindScrollFadeIn();
+  bindSpring = bindScrollSpringIn();
+  bindPolaroidDevelop();
+  bindNavScroll();
+  bindCTABreathing();
 });
+
+// ---------- 导出金句数组供调试用 ----------
+window.FAREWELL_QUOTES = QUOTES;

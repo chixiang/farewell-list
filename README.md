@@ -10,7 +10,11 @@
 - **东方水墨** + **极简留白**
 - 三套主题：**浅色（米白+淡赭）/ 深色（墨黑+淡青）/ 墨色（纯黑+朱砂）**
 - 衬线字体（Noto Serif SC）标题 + 无衬线正文
-- 仪式感胜过效率
+- **呼吸感**：持续缓浮动（2.5s）、缓缩放（1.8s）—— 对应 app 的 DiaryEmptyView
+- **仪式感**：逐字打字机（50ms/字）—— 对应 app 的 SplashQuoteView  
+- **仪式感**：朱砂圆圈点击展开（0.5s spring）—— 对应 app 的 AddFarewell ceremony
+- **物理反馈**：按压缩放（0.97x + 0.9opacity, 0.25s spring）—— 对应 app 的 PressScaleButtonStyle
+- **错峰入场**：滚动触发的逐项延迟（60-80ms/index）—— 对应 app 的 DiaryListView
 
 ## 🛠️ 技术栈
 
@@ -24,8 +28,8 @@
 ```
 farewell-list/
 ├── index.html      # 主页面
-├── styles.css      # 三套主题样式
-├── script.js       # 主题切换 / 今日金句 / 滚动动画
+├── styles.css      # 三套主题样式（含呼吸/仪式动画）
+├── script.js       # 逐字打字机/主题切换/错峰入场/朱砂圆圈
 └── README.md
 ```
 
@@ -66,7 +70,18 @@ python3 -m http.server 8000
 - ❌ 大色块
 - ❌ 营销话术（"赶紧下载"）
 - ❌ 渐变背景
-- ❌ 不必要的动效
+- ❌ 不必要的大动效
+
+## 💨 App 微交互映射
+
+| App 文件 | 微交互 | 网站实现 |
+|----------|--------|---------|
+| `DiaryEmptyView.swift` | 树叶浮动（2.5s）+ 按钮脉动（1.8s） | Hero title 呼吸浮动 + CTA 按钮呼吸 |  
+| `SplashQuoteView.swift` | 金句逐字揭示（0.15s/字）+ 出处淡入 | Hero 金句打字机（50ms/字）+ 出处 opacity 淡入 |
+| `AddFarewellView.swift` | Ceremony 朱砂圆圈展开（0.5s spring） | 右下圆圈点击展开动画 |
+| `DiaryView.swift` | 列表 0.06s/index 错峰 + scrollTransition | 所有卡片/模块同节奏错峰入场 |
+| `PressScaleButtonStyle.swift` | 按压缩放（0.97x + 0.9 op, 0.25s spring） | 所有 `pressable` / `btn` / `:active` 元素 |
+| `RootTabView.swift` | Tab 切换弹簧动画（0.5s） | 主题切换 0.6s ease-in-out background transition |
 
 ## 📜 License
 
